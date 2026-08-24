@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Patrimonio total</title>
+<style>
+:root{--tinta:#141414;--gris:#6b6b6b;--linea:#e6e4df;--rojo:#a3241f;--verde:#1d5c3a;--suave:#faf9f7}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--tinta);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:36px 22px 90px}
+h1{font-size:24px;font-weight:650;margin:0}
+h2{font-size:17px;font-weight:650;margin:34px 0 10px}
+.sub{color:var(--gris);font-size:13px;margin:6px 0 0}
+.controles{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 4px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--linea);border-radius:99px;overflow:hidden}
+.seg button{border:none;background:#fff;padding:6px 14px;font-size:13px;cursor:pointer;color:var(--gris)}
+.seg button.on{background:#141414;color:#fff}
+nav{display:flex;gap:2px;margin:26px 0 0;border-bottom:1px solid var(--linea);flex-wrap:wrap}
+nav button{border:none;background:none;padding:10px 14px;font-size:14.5px;cursor:pointer;color:var(--gris);border-bottom:2px solid transparent;margin-bottom:-1px}
+nav button.on{color:var(--tinta);font-weight:600;border-bottom-color:#141414}
+section{display:none;padding-top:8px}
+section.on{display:block}
+.hero{margin:30px 0 8px}
+.hero .uf{font-size:42px;font-weight:700;letter-spacing:-.5px}
+.hero .eq{color:var(--gris);font-size:15px;margin-top:2px}
+.kpis{display:flex;flex-wrap:wrap;gap:24px;margin:24px 0 4px}
+.kpi .v{font-size:19px;font-weight:650}
+.kpi .l{color:var(--gris);font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;color:var(--gris);font-weight:500;font-size:12.5px;padding:6px 8px 6px 0;border-bottom:1px solid var(--linea)}
+td{padding:8px 8px 8px 0;border-bottom:1px solid var(--linea);vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.neg{color:var(--rojo)}
+.pos{color:var(--verde)}
+.nota{color:var(--gris);font-size:13px;margin-top:3px}
+.chip{display:inline-block;font-size:11.5px;color:var(--gris);border:1px solid var(--linea);border-radius:99px;padding:1px 9px;margin-left:8px;vertical-align:2px}
+.dist{display:flex;gap:30px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.leyenda{font-size:13.5px}
+.leyenda div{margin:4px 0;display:flex;align-items:center;gap:8px}
+.leyenda i{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
+.prop,.card{border:1px solid var(--linea);border-radius:10px;padding:16px 18px;margin:14px 0}
+.prop h3,.card h3{margin:0;font-size:15.5px}
+.prop .uso{color:var(--gris);font-size:13px;margin:2px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 18px;font-size:14px}
+.grid .l{color:var(--gris);font-size:11.5px}
+.grid .v{font-weight:600;font-variant-numeric:tabular-nums}
+.wf{margin:16px 0}
+.wf .fila{display:grid;grid-template-columns:180px 1fr 175px;gap:12px;align-items:center;margin:7px 0;font-size:13.5px}
+.wf .pista{background:#f0eeea;border-radius:4px;height:14px;overflow:hidden}
+.wf .barra{height:100%;border-radius:4px;background:#141414}
+.wf .roja{background:var(--rojo)}
+.wf .verde{background:var(--verde)}
+.wf .punteada{background:repeating-linear-gradient(45deg,#c9c6bd 0 6px,#e6e4df 6px 12px)}
+.wf .val{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.3}
+.wf .val small{color:var(--gris);font-size:11.5px;display:block}
+input[type=number],input[type=text]{border:1px solid var(--linea);border-radius:7px;padding:6px 9px;font-size:14px;width:110px;font-variant-numeric:tabular-nums}
+input[type=range]{width:220px;accent-color:#141414}
+.preset{border:1px solid var(--linea);background:var(--suave);border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;margin-right:6px}
+ul{margin:8px 0;padding-left:20px;color:var(--gris);font-size:13.5px}
+li{margin:4px 0}
+.pie{color:var(--gris);font-size:12.5px;margin-top:46px;border-top:1px solid var(--linea);padding-top:14px}
+.tip{border-bottom:1px dotted #9a988f;cursor:help;position:relative}
+.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:#141414;color:#fff;padding:9px 12px;border-radius:8px;font-size:12.5px;line-height:1.45;
+  width:min(260px,72vw);white-space:normal;opacity:0;visibility:hidden;transition:opacity .12s;z-index:9;
+  text-align:left;font-weight:400;pointer-events:none}
+.tip:hover::after,.tip:focus::after{opacity:1;visibility:visible}
+td:first-child .tip::after,th:first-child .tip::after{left:0;transform:none}
+td.num .tip::after,th.num .tip::after{left:auto;right:0;transform:none}
+#gate{max-width:340px;margin:18vh auto;padding:0 22px;text-align:center}
+#gate h1{font-size:20px}
+#gate input{width:100%;margin-top:18px;padding:10px 12px;font-size:16px;border:1px solid var(--linea);border-radius:8px;text-align:center}
+#gate button{width:100%;margin-top:10px;padding:10px;font-size:15px;border:none;border-radius:8px;background:#141414;color:#fff;cursor:pointer}
+#gerr{color:var(--rojo);font-size:13.5px;min-height:20px;margin-top:10px}
+@media (max-width:600px){.hero .uf{font-size:32px}.wf .fila{grid-template-columns:105px 1fr 130px}}
+</style>
+</head>
+<body>
+<div id="gate">
+  <h1>Patrimonio total</h1>
+  <p class="sub">Contenido cifrado. Ingresa la clave.</p>
+  <input id="clave" type="password" autocomplete="current-password" placeholder="Clave">
+  <button id="entrar">Entrar</button>
+  <p id="gerr"></p>
+</div>
+<div class="wrap" id="app" hidden></div>
+<script>
+const PAYLOAD = {"v": 1, "iter": 200000, "salt": "cAgXFXltGBdyUs2WKueTUg==", "iv": "HjUx8kHRwFZTDw/E", "ct": "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"};
+function b64a(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+async function descifrar(clave){
+  const enc=new TextEncoder();
+  const km=await crypto.subtle.importKey("raw",enc.encode(clave),"PBKDF2",false,["deriveKey"]);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64a(PAYLOAD.salt),iterations:PAYLOAD.iter,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64a(PAYLOAD.iv)},key,b64a(PAYLOAD.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+const nf0=new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
+const nf1=new Intl.NumberFormat("es-CL",{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2=new Intl.NumberFormat("es-CL",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null, UFv=0, USDv=0;
+const state={castigo:0.10, tab:"resumen"};
+const fUF=x=>nf0.format(Math.round(x))+" UF";
+const fM=x=>"$"+nf1.format(x/1e6)+" M";
+const fCLP=x=>"$"+nf0.format(Math.round(x));
+const dUF=clpv=>fUF(clpv/UFv);                 // CLP → "N UF"
+const dual=clpv=>dUF(clpv)+" · "+fM(clpv);      // "N UF · $X M"
+const tip=(txt,def)=>`<span class="tip" tabindex="0" data-tip="${esc(def)}">${esc(txt)}</span>`;
+const COL=["#1f1f1e","#57564f","#8b897f","#b8b5a9","#2c5f43","#8a4a3a"];
+
+const T={
+  neto:"Patrimonio neto = todo lo que tienes (activos) menos todo lo que debes (pasivos).",
+  activos:"Lo que tienes: inversiones, propiedades (solo la parte tuya) y platas por cobrar.",
+  pasivos:"Deudas con terceros. Las hipotecas no van aquí: ya están restadas dentro del equity de cada propiedad.",
+  ladrillo:"Qué parte de tus activos es propiedad, contando solo lo tuyo (valor menos hipoteca).",
+  ladrilloBruto:"Propiedades a valor completo (sin restar hipotecas) sobre el total bruto. Da una idea de exposición total al ladrillo.",
+  uf:"La UF sube con la inflación. Medir en UF permite comparar montos de distintos años en plata de igual valor.",
+  equity:"Equity = lo que de verdad es tuyo de la propiedad: su valor menos lo que aún debes del crédito.",
+  hipoteca:"Saldo insoluto: lo que todavía falta por pagarle al banco.",
+  dividendo:"La cuota mensual del crédito hipotecario.",
+  cuota:"Ej.: 58/300 = llevas pagadas 58 de 300 cuotas. CAEV = costo total anual del crédito, seguros incluidos.",
+  valorizacion:"Tu estimación de mercado menos 10%, para no inflar el número. Puedes cambiarlo arriba a «Mercado pleno».",
+  yieldArr:"Arriendo de 12 meses dividido por el valor de la propiedad. Bruto: sin descontar contribuciones ni mantención.",
+  ritmo:"Crecimiento promedio por año desde la compra (interés compuesto), medido en UF.",
+  ganUF:"Medida en UF, o sea descontando la inflación: ganancia real.",
+  nominal:"En pesos corrientes, sin descontar inflación; por eso el % se ve más grande.",
+  recibido:"Lo que ya entró por la venta (2 de 3 cuotas), en pesos de cada fecha.",
+  gastado:"Plata que ya no está invertida: impuestos y giros a gastos personales o pago de deudas.",
+  quedo:"Recibido menos gastado: lo que siguió invertido y trabajando.",
+  valeHoy:"Valor actual de lo que quedó invertido. La diferencia con «quedó trabajando» es la rentabilidad ganada.",
+  porVenir:"La última cuota llega en mar-2027. Está en bruto: aún hay que pagarle impuestos.",
+  tasaReal:"Tasa sobre la UF, o sea ya descontada la inflación. «4% real» ≈ UF + 4%.",
+  valorFinal:"Cuánto tendrías al final, en plata de hoy, con interés compuesto.",
+  origen:"El monto en su moneda original (UF, USD o pesos), antes de convertir."
+};
+
+function modelo(c){
+  const props=D.props.map(p=>{
+    const cons=p.mercado*(1-c), equity=cons-p.saldo;
+    return {...p, cons, equity, equity_clp:equity*UFv};
+  });
+  const inmoClp=props.reduce((s,p)=>s+p.equity_clp,0);
+  const bloques=[];
+  for(const b of D.bloques_otros) bloques.push({nombre:b.nombre,clp:b.clp,items:b.items,pos:b.pos});
+  bloques.push({nombre:"Inmobiliario (equity)",clp:inmoClp,pos:4,
+    items:props.map(p=>({n:p.n+" — "+p.dir,clp:p.equity_clp,f:"hoy",orig:nf0.format(Math.round(p.equity))+" UF",
+      d:"Equity: "+nf0.format(Math.round(p.cons))+" UF valorización − "+nf2.format(p.saldo)+" UF de hipoteca."}))});
+  bloques.sort((a,b)=>a.pos-b.pos);
+  const activos=bloques.reduce((s,b)=>s+b.clp,0);
+  bloques.forEach(b=>b.pct=b.clp/activos*100);
+  const pasivos=D.pasivos.reduce((s,p)=>s+p.clp,0);
+  const consTot=props.reduce((s,p)=>s+p.cons,0);
+  const hipTot=props.reduce((s,p)=>s+p.saldo,0);
+  return {props,bloques,activos,pasivos,neto:activos-pasivos,
+    pctEquity:inmoClp/activos*100,
+    pctBruto:consTot/(activos/UFv+hipTot)*100};
+}
+
+function donut(bloques){
+  const R=62,C=2*Math.PI*R;let off=0,segs="";
+  bloques.forEach((b,k)=>{
+    const largo=b.pct/100*C;
+    segs+=`<circle r="${R}" cx="80" cy="80" fill="none" stroke="${COL[k%COL.length]}" stroke-width="26"
+      stroke-dasharray="${largo} ${C-largo}" stroke-dashoffset="${-off}" transform="rotate(-90 80 80)"/>`;
+    off+=largo;
+  });
+  return `<svg width="160" height="160" viewBox="0 0 160 160" role="img">${segs}</svg>`;
+}
+
+function rResumen(m){
+  let h=`<div class="hero"><div class="uf">${dUF(m.neto)}</div>
+  <div class="eq">${tip("Patrimonio neto",T.neto)} · ${fM(m.neto)} · USD ${nf0.format(Math.round(m.neto/USDv))}</div></div>`;
+  h+=`<div class="kpis">
+  <div class="kpi"><div class="v">${dual(m.activos)}</div><div class="l">${tip("Activos",T.activos)}</div></div>
+  <div class="kpi"><div class="v neg">−${dual(m.pasivos)}</div><div class="l">${tip("Pasivos externos",T.pasivos)}</div></div>
+  <div class="kpi"><div class="v">${nf1.format(m.pctEquity)}%</div><div class="l">${tip("Ladrillo (equity / activos)",T.ladrillo)}</div></div>
+  <div class="kpi"><div class="v">${nf1.format(m.pctBruto)}%</div><div class="l">${tip("Ladrillo bruto",T.ladrilloBruto)}</div></div></div>`;
+  h+=`<div class="dist">${donut(m.bloques)}<div class="leyenda">`;
+  m.bloques.forEach((b,k)=>{h+=`<div><i style="background:${COL[k%COL.length]}"></i>${esc(b.nombre)} · <b>${nf1.format(b.pct)}%</b> · ${dual(b.clp)}</div>`});
+  h+=`</div></div>`;
+  h+=`<table><tr><th>Bloque</th><th class="num">${tip("UF",T.uf)}</th><th class="num">Pesos</th><th class="num">%</th></tr>`;
+  m.bloques.forEach(b=>{h+=`<tr><td>${esc(b.nombre)}</td><td class="num">${dUF(b.clp)}</td><td class="num">${fM(b.clp)}</td><td class="num">${nf1.format(b.pct)}%</td></tr>`});
+  h+=`<tr><td><b>${tip("Total activos",T.activos)}</b></td><td class="num"><b>${dUF(m.activos)}</b></td><td class="num"><b>${fM(m.activos)}</b></td><td class="num">100%</td></tr>`;
+  D.pasivos.forEach(p=>{h+=`<tr><td class="neg">${esc(p.n)}</td><td class="num neg">−${dUF(p.clp)}</td><td class="num neg">−${fM(p.clp)}</td><td class="num"></td></tr>`});
+  h+=`<tr><td><b>${tip("Patrimonio neto",T.neto)}</b></td><td class="num"><b>${dUF(m.neto)}</b></td><td class="num"><b>${fM(m.neto)}</b></td><td class="num"></td></tr></table>`;
+  return h;
+}
+
+function rInmo(m){
+  const totInv=m.props.reduce((s,p)=>s+p.inv_uf,0);
+  const totMer=m.props.reduce((s,p)=>s+p.mercado,0);
+  const totGan=totMer-totInv;
+  let h=`<div class="kpis">
+  <div class="kpi"><div class="v">${fUF(totInv)} · ${fM(totInv*UFv)}</div><div class="l">Total invertido (compras + mejoras)</div></div>
+  <div class="kpi"><div class="v">${fUF(totMer)} · ${fM(totMer*UFv)}</div><div class="l">Valor de mercado hoy (tu estimación)</div></div>
+  <div class="kpi"><div class="v pos">+${fUF(totGan)} · ${fM(totGan*UFv)} (+${nf1.format(totGan/totInv*100)}%)</div><div class="l">${tip("Ganancia en UF",T.ganUF)}</div></div></div>`;
+  for(const p of m.props){
+    h+=`<div class="prop"><h3>${esc(p.n)} <span class="chip">crédito ${esc(p.credito)}</span></h3>
+    <div class="uso">${esc(p.dir)} · ${esc(p.uso)}</div>
+    <div class="grid">
+    <div><div class="l">Mercado (tu estimación)</div><div class="v">${fUF(p.mercado)} · ${fM(p.mercado*UFv)}</div></div>
+    <div><div class="l">${tip("Valorización usada"+(state.castigo>0?" (−10%)":" (mercado)"),T.valorizacion)}</div><div class="v">${fUF(p.cons)} · ${fM(p.cons*UFv)}</div></div>
+    <div><div class="l">${tip("Hipoteca (saldo)",T.hipoteca)}</div><div class="v neg">−${nf2.format(p.saldo)} UF · −${fM(p.saldo*UFv)}</div></div>
+    <div><div class="l">${tip("Equity",T.equity)}</div><div class="v">${fUF(p.equity)} · ${fM(p.equity_clp)}</div></div>
+    <div><div class="l">${tip("Dividendo",T.dividendo)}</div><div class="v">${nf2.format(p.div_uf)} UF ≈ ${fCLP(p.div_uf*UFv)}/mes</div></div>
+    <div><div class="l">${tip("Cuota · CAEV",T.cuota)}</div><div class="v">${esc(p.cuota)} · ${esc(p.caev)}</div></div>`;
+    if(p.arr_clp>0){h+=`<div><div class="l">Arriendo</div><div class="v">${fCLP(p.arr_clp)}/mes</div></div>
+    <div><div class="l">${tip("Rentabilidad bruta arriendo",T.yieldArr)}</div><div class="v">${nf1.format(p.yield_pct)}% anual</div></div>`;}
+    h+=`</div>
+    <h2 style="margin-top:18px;font-size:14.5px">Cuánto has ganado desde la compra</h2>
+    <div class="nota">${esc(p.compra_desc)}</div>
+    <div class="grid" style="margin-top:10px">
+    <div><div class="l">Invertido total</div><div class="v">${fUF(p.inv_uf)} · ${fM(p.inv_uf*UFv)}</div></div>
+    <div><div class="l">Vale hoy (mercado)</div><div class="v">${fUF(p.mercado)} · ${fM(p.mercado*UFv)}</div></div>
+    <div><div class="l">${tip("Ganancia en UF",T.ganUF)}</div><div class="v ${p.gan_uf>=0?"pos":"neg"}">${p.gan_uf>=0?"+":""}${fUF(p.gan_uf)} · ${fM(p.gan_uf*UFv)} (${p.gan_uf>=0?"+":""}${nf1.format(p.gan_pct)}%)</div></div>
+    <div><div class="l">${tip("Ritmo anual ("+p.anios+" años)",T.ritmo)}</div><div class="v">${nf1.format(p.cagr_pct)}% en UF</div></div>`;
+    if(p.compra_clp){h+=`<div><div class="l">${tip("En pesos nominales",T.nominal)}</div><div class="v">${fCLP(p.compra_clp)} → ${fCLP(p.hoy_clp)} (+${nf0.format((p.hoy_clp/p.compra_clp-1)*100)}%)</div></div>`;}
+    h+=`</div><div class="nota">Ganancia contra tu estimación de mercado, sin descontar dividendos pagados ni costo del crédito.</div></div>`;
+  }
+  return h;
+}
+
+function rFlujo(){
+  const g=D.genoma;
+  let h=`<div class="kpis">
+  <div class="kpi"><div class="v">${dual(g.rec_tot)}</div><div class="l">${tip("Recibido (1ª + 2ª cuota)",T.recibido)}</div></div>
+  <div class="kpi"><div class="v neg">−${dual(g.gas_tot)} (${nf1.format(g.gas_pct)}%)</div><div class="l">${tip("Gastado",T.gastado)}</div></div>
+  <div class="kpi"><div class="v">${dual(g.neto_trab)}</div><div class="l">${tip("Quedó trabajando",T.quedo)}</div></div>
+  <div class="kpi"><div class="v pos">${dual(g.propio_hoy)} (+${nf1.format(g.rentab_pct)}%)</div><div class="l">${tip("Eso vale hoy",T.valeHoy)}</div></div></div>`;
+  const base=g.rec_tot;
+  const fila=(lbl,val,cls,w)=>`<div class="fila"><div>${lbl}</div><div class="pista"><div class="barra ${cls}" style="width:${Math.min(w,100)}%"></div></div><div class="val">${fM(val)}<small>${dUF(val)}</small></div></div>`;
+  h+=`<div class="wf">`;
+  h+=fila(tip("Recibido",T.recibido),g.rec_tot,"",100);
+  h+=fila(tip("Gastado",T.gastado),g.gas_tot,"roja",g.gas_tot/base*100);
+  h+=fila(tip("Quedó trabajando",T.quedo),g.neto_trab,"",g.neto_trab/base*100);
+  h+=fila(tip("Vale hoy",T.valeHoy),g.propio_hoy,"verde",g.propio_hoy/base*100);
+  h+=fila(tip("Por venir (3ª cuota)",T.porVenir),g.pv_clp,"punteada",g.pv_clp/base*100);
+  h+=`</div>`;
+  h+=`<h2>Entradas</h2><table><tr><th>Cuota</th><th class="num">${tip("UF",T.uf)}</th><th class="num">Pesos</th></tr>`;
+  g.recibido.forEach(r=>{h+=`<tr><td><b>${esc(r.n)}</b> <span class="chip">${esc(r.f)}</span><div class="nota">${esc(r.d)}</div></td><td class="num">${dUF(r.clp)}</td><td class="num">${fM(r.clp)}</td></tr>`});
+  h+=`</table><h2>Salidas (gastado)</h2><table><tr><th>Destino</th><th class="num">${tip("UF",T.uf)}</th><th class="num">Pesos</th></tr>`;
+  g.gastado.forEach(r=>{h+=`<tr><td><b>${esc(r.n)}</b> <span class="chip">${esc(r.f)}</span><div class="nota">${esc(r.d)}</div></td><td class="num neg">−${dUF(r.clp)}</td><td class="num neg">−${fM(r.clp)}</td></tr>`});
+  h+=`</table>`;
+  h+=`<div class="card"><h3>Por venir: ${esc(g.pv.n)} (${esc(g.pv.f)})</h3>
+  <div class="nota">${esc(g.pv.d)}</div>
+  <div class="grid" style="margin-top:10px"><div><div class="l">USD</div><div class="v">USD ${nf0.format(g.pv.usd)}</div></div>
+  <div><div class="l">En plata de hoy</div><div class="v">${dual(g.pv_clp)}</div></div></div></div>`;
+  h+=`<p class="nota">${esc(g.nota)}</p>`;
+  return h;
+}
+
+function rSim(m){
+  const s=D.sim;
+  let h=`<div class="card"><h3>1 · Proyectar una inversión</h3>
+  <p class="nota">${esc(s.nota)}</p>
+  <div style="margin:12px 0">
+  ${s.presets.map(p=>`<button class="preset" data-m="${p.m}">${esc(p.l)}</button>`).join("")}
+  </div>
+  <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center">
+  <label>Monto: $ <input type="number" id="simMonto" value="100" min="1" step="10"> M</label>
+  <label>Años: <input type="range" id="simAnios" min="1" max="15" value="5"> <b id="simAniosV">5</b></label>
+  </div>
+  <table style="margin-top:14px"><tr><th>Alternativa</th><th class="num">${tip("Tasa real anual",T.tasaReal)}</th><th class="num">${tip("Valor final",T.valorFinal)}</th><th class="num">Ganancia</th></tr>`;
+  s.alternativas.forEach((a,k)=>{
+    h+=`<tr><td>${esc(a.n)}<div class="nota">${esc(a.d)}</div></td>
+    <td class="num"><input type="number" class="simTasa" data-k="${k}" value="${a.tasa}" step="0.5" style="width:70px"> %</td>
+    <td class="num" id="simF${k}">—</td><td class="num" id="simG${k}">—</td></tr>`;
+  });
+  h+=`</table><p class="nota">Resultados en plata de hoy (tasas reales sobre UF).</p></div>`;
+
+  h+=`<div class="card"><h3>2 · ¿Cuánto ladrillo quiero?</h3>
+  <p class="nota">Hoy el ${tip("equity inmobiliario",T.equity)} es el ${nf1.format(m.pctEquity)}% de tus activos. Mueve la meta y mira cuánta plata habría que mover.</p>
+  <label>Meta: <input type="range" id="metaPct" min="0" max="60" value="${Math.round(m.pctEquity)}"> <b id="metaPctV">${Math.round(m.pctEquity)}%</b></label>
+  <p id="metaOut" style="font-size:15px;margin:10px 0 2px"></p>
+  <p class="nota">Cálculo simple: mover equity entre lo financiero y propiedades, activos totales constantes.</p></div>`;
+
+  h+=`<div class="card"><h3>3 · ¿Prepagar hipotecas o invertir?</h3>
+  <p class="nota">Debes ${nf2.format(s.saldo_hip_uf)} UF (${fM(s.saldo_hip_uf*UFv)}) en hipotecas a ${tip("CAEV",T.cuota)} promedio ${nf1.format(s.caev_pond)}%. Si tu inversión rinde más que eso, conviene invertir; si rinde menos, prepagar.</p>
+  <label>Retorno esperado de tu inversión: <input type="number" id="ppTasa" value="4.0" step="0.5" style="width:70px"> % ${tip("real",T.tasaReal)}</label>
+  <p id="ppOut" style="font-size:15px;margin:10px 0 2px"></p></div>`;
+  return h;
+}
+
+function rDetalle(m){
+  let h=`<table><tr><th>Ítem</th><th class="num">${tip("Valor origen",T.origen)}</th><th class="num">${tip("UF",T.uf)}</th><th class="num">Pesos</th></tr>`;
+  for(const b of m.bloques){for(const i of b.items){
+    h+=`<tr><td><b>${esc(i.n)}</b> <span class="chip">${esc(b.nombre)} · ${esc(i.f)}</span><div class="nota">${esc(i.d)}</div></td>
+    <td class="num">${i.orig?esc(i.orig):"—"}</td><td class="num">${dUF(i.clp)}</td><td class="num">${fM(i.clp)}</td></tr>`;
+  }}
+  D.pasivos.forEach(p=>{h+=`<tr><td class="neg"><b>${esc(p.n)}</b> <span class="chip">pasivo · ${esc(p.f)}</span><div class="nota">${esc(p.d)}</div></td>
+  <td class="num">${p.orig?esc(p.orig):"—"}</td><td class="num neg">−${dUF(p.clp)}</td><td class="num neg">−${fM(p.clp)}</td></tr>`});
+  h+=`</table>`;
+  h+=`<h2>Criterios</h2><ul>${D.criterios.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`;
+  h+=`<h2>Qué queda fuera</h2><ul>${D.exclusiones.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`;
+  return h;
+}
+
+function simCalcular(m){
+  const monto=(parseFloat(document.getElementById("simMonto").value)||0)*1e6;
+  const anios=parseInt(document.getElementById("simAnios").value);
+  document.getElementById("simAniosV").textContent=anios;
+  document.querySelectorAll(".simTasa").forEach(inp=>{
+    const k=inp.dataset.k, r=(parseFloat(inp.value)||0)/100;
+    const fin=monto*Math.pow(1+r,anios);
+    document.getElementById("simF"+k).textContent=fM(fin)+" · "+dUF(fin);
+    const g=document.getElementById("simG"+k);
+    g.textContent=(fin>=monto?"+":"")+fM(fin-monto);
+    g.className="num "+(fin>=monto?"pos":"neg");
+  });
+  const meta=parseInt(document.getElementById("metaPct").value);
+  document.getElementById("metaPctV").textContent=meta+"%";
+  const inmoClp=m.activos*m.pctEquity/100;
+  const dif=m.activos*meta/100-inmoClp;
+  const out=document.getElementById("metaOut");
+  if(Math.abs(dif)<m.activos*0.005){out.textContent="Ya estás en la meta.";}
+  else if(dif>0){out.innerHTML=`Comprar <b>${dual(dif)}</b> más de propiedad (equity), p. ej. moviéndolo desde lo financiero.`;}
+  else{out.innerHTML=`Reducir ladrillo en <b>${dual(-dif)}</b> (vender o hipotecar) y pasarlo a financiero.`;}
+  const rp=parseFloat(document.getElementById("ppTasa").value)||0;
+  const difUF=D.sim.saldo_hip_uf*(rp-D.sim.caev_pond)/100;
+  const pp=document.getElementById("ppOut");
+  if(difUF>=0){pp.innerHTML=`Invirtiendo a ${nf1.format(rp)}% ganas <b class="pos">+${nf0.format(difUF)} UF/año</b> (≈ ${fM(difUF*UFv)}) más que prepagando.`;}
+  else{pp.innerHTML=`A ${nf1.format(rp)}% te conviene <b>prepagar</b>: ahorras <b class="pos">${nf0.format(-difUF)} UF/año</b> (≈ ${fM(-difUF*UFv)}).`;}
+}
+
+function pintar(){
+  const m=modelo(state.castigo);
+  const renders=[rResumen,rInmo,rFlujo,rSim,rDetalle];
+  D.tabs.forEach((t,k)=>{document.getElementById("t-"+t[0]).innerHTML=renders[k].length?renders[k](m):renders[k]()});
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===state.tab));
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==="t-"+state.tab));
+  document.querySelectorAll("#segVal button").forEach(b=>b.classList.toggle("on",parseFloat(b.dataset.c)===state.castigo));
+  const sim=document.getElementById("t-"+D.tabs[3][0]);
+  sim.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>simCalcular(m)));
+  sim.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>{document.getElementById("simMonto").value=b.dataset.m;simCalcular(m)}));
+  simCalcular(m);
+}
+
+function armar(d){
+  D=d; UFv=d.ind.uf; USDv=d.ind.usd; state.castigo=d.castigo;
+  const app=document.getElementById("app");
+  app.hidden=false;
+  app.innerHTML=`<h1>Patrimonio total</h1>
+  <p class="sub">${esc(d.titular)} · UF $${nf2.format(UFv)} y dólar $${nf2.format(USDv)} al ${esc(d.ind.fecha)} (${esc(d.ind.origen)}) · generado ${esc(d.generado)}</p>
+  <div class="controles">
+    <span class="seg" id="segVal">
+      <button data-c="0.1">Conservador −10%</button><button data-c="0">Mercado pleno</button>
+    </span>
+    ${tip("¿qué es esto?","«Conservador −10%» valoriza tus propiedades un 10% bajo tu estimación de mercado, para no inflar el patrimonio. «Mercado pleno» las usa tal cual. Los montos aparecen siempre en UF y en pesos; pasa el mouse (o toca) los textos punteados para ver explicaciones.")}
+  </div>
+  <nav id="tabs">${d.tabs.map(t=>`<button data-t="${t[0]}">${esc(t[1])}</button>`).join("")}</nav>
+  ${d.tabs.map(t=>`<section id="t-${t[0]}"></section>`).join("")}
+  <p class="pie">Fuente única: patrimonio.json (local, nunca en el repo). Para actualizar: editar el JSON → correr generar_patrimonio.py → publicar con «publica».</p>`;
+  document.querySelectorAll("#tabs button").forEach(b=>b.addEventListener("click",()=>{state.tab=b.dataset.t;location.hash=state.tab;pintar()}));
+  document.querySelectorAll("#segVal button").forEach(b=>b.addEventListener("click",()=>{state.castigo=parseFloat(b.dataset.c);pintar()}));
+  if(location.hash){const t=location.hash.slice(1);if(d.tabs.some(x=>x[0]===t))state.tab=t;}
+  pintar();
+}
+
+async function intentar(){
+  const err=document.getElementById("gerr");
+  err.textContent="";
+  try{
+    const d=await descifrar(document.getElementById("clave").value);
+    document.getElementById("gate").remove();
+    armar(d);
+  }catch(e){err.textContent="Clave incorrecta.";}
+}
+document.getElementById("entrar").addEventListener("click",intentar);
+document.getElementById("clave").addEventListener("keydown",e=>{if(e.key==="Enter")intentar()});
+document.getElementById("clave").focus();
+</script>
+</body>
+</html>
